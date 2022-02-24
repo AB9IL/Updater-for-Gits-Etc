@@ -1,4 +1,4 @@
-# Update your Git based software, plus ad-hoc debs, zip, and tar based packages. 
+## Update your Git based software, plus ad-hoc debs, zip, and tar based packages. 
 
 Use this for Linux software you have installed which is not from your distribution's main repositories, of if you want fresher versions than available. I wrote this to simplify the time consuming tasks of checking various repos for updates, downloading, setting special compilation options, compiling, then finally installing source based packages. Of course, why not add capability to retrieve debs, zips, tar, or appimages?
 
@@ -13,7 +13,7 @@ python3 -m pip install lastversion
 | ---
 | audioprism
 | fd-find
-| fetchproxies
+| fetch-some-proxies
 | fzf
 | fzproxy
 | i3ass
