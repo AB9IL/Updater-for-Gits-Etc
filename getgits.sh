@@ -11,6 +11,9 @@
 # To disable a specific updater, comment its reference in
 # the function list near the bottom of this script.
 
+# define working directory
+working_dir="/usr/local/src"
+
 # get the latest release from git repos
 download_last(){
     cd $3
@@ -20,20 +23,22 @@ export -f download_last
 
 update_audioprism() {
 printf "\n\n...audioprism..."
+cd "$working_dir"
 apt install libpulse-dev libfftw3-dev libsdl2-dev libsdl2-ttf-dev \
     libsndfile1-dev libgraphicsmagick++1-dev
-[[ -f "/usr/local/src/audioprism" ]] \
+[[ -f "$working_dir/audioprism" ]] \
     || git clone https://github.com/vsergeev/audioprism
-cd /usr/local/src/audioprism
+cd $working_dir/audioprism
 make
 make install
 }
 
 update_fd() {
 printf "\n\n...fd..."
+cd "$working_dir"
 git_repo="sharkdp/fd"
 target_file="fd_.*_amd64.deb"
-dl_dir="/usr/local/src/fd"
+dl_dir="$working_dir/fd"
 [[ -f "$dl_dir" ]] || mkdir -p $dl_dir
 cd "$dl_dir"
 download_last $git_repo $target_file $dl_dir
@@ -45,17 +50,18 @@ rm ./*.deb
 
 update_fetchproxies() {
 printf "\n\n...fetch-some-proxies..."
-cd /usr/local/src
-[[ -f "/usr/local/src/fetch-some-proxies" ]] \
+cd "$working_dir"
+[[ -f "$working_dir/fetch-some-proxies" ]] \
     || git clone https://github.com/stamparm/fetch-some-proxies
     # nothing more to do
 }
 
 update_fzf() {
 printf "\n\n...fzf..."
+cd "$working_dir"
 git_repo="junegunn/fzf"
 target_file="fzf-.*-linux_amd64.tar.gz"
-dl_dir="/usr/local/src/fzf"
+dl_dir="$working_dir/fzf"
 [[ -f "$dl_dir" ]] || mkdir -p $dl_dir
 cd "$dl_dir"
 download_last $git_repo $target_file $dl_dir
@@ -63,9 +69,9 @@ gz_file="$(ls | grep "$target_file")"
 tar -xf $gz_file
 chown root:root fzf
 # uncomment the symlinker below if needed
-#[[ -f "$dl_dir/fzf" ]] \
-#    && rm "/usr/local/bin/fzf" \
-#    && ln -s "$dl_dir/fzf" "/usr/local/bin/fzf"
+[[ -f "$dl_dir/fzf" ]] \
+    && rm "/usr/local/bin/fzf" \
+    && ln -s "$dl_dir/fzf" "/usr/local/bin/fzf"
 
 # clean up
 rm ./*.gz
@@ -73,69 +79,85 @@ rm ./*.gz
 
 update_fzproxy() {
 printf "\n\n...fzproxy..."
-/usr/local/src
-[[ -f "/usr/local/src/fzproxy" ]] \
+cd "$working_dir"
+[[ -f "$working_dir/fzproxy" ]] \
     || git clone https://git.teknik.io/matf/fzproxy
 # uncomment the symlinker below if needed
-#[[ -f "/usr/local/src/fzproxy/fzproxy" ]] \
-#    && rm "/usr/local/sbin/fzproxy" \
-#    && ln -s "/usr/local/src/fzproxy/fzproxy" "/usr/local/sbin/fzproxy"
+[[ -f "$working_dir/fzproxy/fzproxy" ]] \
+    && rm "/usr/local/sbin/fzproxy" \
+    && ln -s "$working_dir/fzproxy/fzproxy" "/usr/local/sbin/fzproxy"
 }
 
 update_i3ass() {
 printf "\n\n...fzproxy..."
-/usr/local/src
-[[ -f "/usr/local/src/i3ass" ]] \
+cd "$working_dir"
+[[ -f "$working_dir/i3ass" ]] \
     || git clone https://github.com/budlabs/i3ass
 # uncomment the symlinker below if needed
 #scripts="i3flip i3fyra i3get i3gw i3king i3Kornhe \
 # i3list i3menu i3run i3var i3viswiz i3zen"
 #for item in $scripts; do
 #    rm "/usr/bin/$item"
-#    ln -s "/usr/local/src/i3ass/src/$item/$item" "/usr/bin/$item"
+#    ln -s "$working_dir/i3ass/src/$item/$item" "/usr/bin/$item"
 #done
+}
+
+update_outline_client() {
+printf "\n\n...Outline-Client..."
+cd "$working_dir"
+git_repo="Jigsaw-Code/outline-client"
+target_file="Outline-Client.AppImage"
+dl_dir="/opt/outline"
+[[ -f "$dl_dir" ]] || mkdir -p $dl_dir
+cd "$dl_dir"
+download_last $git_repo $target_file $dl_dir
+app_img_file="$(ls | grep "$target_file")"
+chmod +x $app_img_file
 }
 
 update_picom() {
 printf "\n\n...Python-Pulseaudio-Loopback-Tool..."
-/usr/local/src
-[[ -f "/usr/local/src/Python-Pulseaudio-Loopback-Tool" ]] \
+cd "$working_dir"
+[[ -f "$working_dir/Python-Pulseaudio-Loopback-Tool" ]] \
     || git clone https://github.com/yshui/picom
-cd /usr/local/src/picom
+cd $working_dir/picom
 git submodule update --init --recursive
 [[ -f "/usr/bin/meson" ]] || \
     ln -s "/usr/local/bin/meson" "/usr/bin/meson"
 meson --buildtype=release . build
 ninja -C build
 # uncomment the symlinker below if needed
-#[[ -f "/usr/local/src/picom/build/src/picom" ]] \
+#[[ -f "$working_dir/picom/build/src/picom" ]] \
 #    && rm "/usr/local/bin/picom" \
-#    && ln -s "/usr/local/src/picom/build/src/picom" "/usr/local/bin/picom"
+#    && ln -s "$working_dir/picom/build/src/picom" "/usr/local/bin/picom"
 }
 
 update_pulseaudioloopback() {
 printf "\n\n...Python-Pulseaudio-Loopback-Tool..."
-[[ -f "/usr/local/src/Python-Pulseaudio-Loopback-Tool" ]] \
+cd "$working_dir"
+[[ -f "$working_dir/Python-Pulseaudio-Loopback-Tool" ]] \
     || git clone https://github.com/alentoghostflame/Python-Pulseaudio-Loopback-Tool
 # nothing more to do
 }
 
 update_rgpipe() {
 printf "\n\n...rgpipe..."
-[[ -f "/usr/local/src/rgpipe" ]] \
+cd "$working_dir"
+[[ -f "$working_dir/rgpipe" ]] \
     || git clone https://github.com/ColonelBuendia/rgpipe
-chmod +x /usr/local/src/rgpipe/rgpipe
+chmod +x $working_dir/rgpipe/rgpipe
 # uncomment the symlinker below if needed
-#[[ -f "/usr/local/src/rgpipe/rgpipe" ]] \
-#    && rm "/usr/local/sbin/rgpipe" \
-#    && ln -s "/usr/local/src/rgpipe/rgpipe" "/usr/local/sbin/rgpipe"
+[[ -f "$working_dir/rgpipe/rgpipe" ]] \
+    && rm "/usr/local/sbin/rgpipe" \
+    && ln -s "$working_dir/rgpipe/rgpipe" "/usr/local/sbin/rgpipe"
 }
 
 update_ripgrep() {
 printf "\n\n...ripgrep..."
+cd "$working_dir"
 git_repo="BurntSushi/ripgrep"
 target_file="ripgrep_.*_amd64.deb"
-dl_dir="/usr/local/src/ripgrep"
+dl_dir="$working_dir/ripgrep"
 [[ -f "$dl_dir" ]] || mkdir -p $dl_dir
 cd "$dl_dir"
 download_last $git_repo $target_file $dl_dir
@@ -147,9 +169,10 @@ rm ./*.deb
 
 update_ripgrep_all() {
 printf "\n\n...ripgrep_all..."
+cd "$working_dir"
 git_repo="phiresky/ripgrep-all"
 target_file="ripgrep_all-.*-linux-musl.tar.gz"
-dl_dir="/usr/local/src"
+dl_dir="$working_dir"
 download_last $git_repo $target_file $dl_dir
 gz_file="$(ls | grep "$target_file")"
 tar -xf $gz_file && mv ripgrep_all*/ ripgrep-all
@@ -180,6 +203,7 @@ update_fetchproxies \
 update_fzf \
 update_fzproxy \
 update_i3ass \
+update_outline_client \
 update_picom \
 update_pulseaudioloopback \
 update_rgpipe \
