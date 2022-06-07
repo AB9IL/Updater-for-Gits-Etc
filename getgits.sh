@@ -185,6 +185,23 @@ ninja -C build
 #ln -sf "$working_dir/picom/build/src/picom" "/usr/local/bin/picom"
 }
 
+update_powerline() {
+printf "\n\n...Powerline-go..."
+cd "$working_dir"
+git_repo="justjanne/powerline-go"
+target_file="powerline-go-linux-amd64"
+dl_dir="$working_dir/powerline"
+[[ -d "$dl_dir" ]] || mkdir -p $dl_dir
+download_last $git_repo $target_file $dl_dir
+# overwrite the old executable
+# if new file successfully downloaded
+[[ -f "${dl_dir}/${target_file}.1" ]] && mv "${dl_dir}/${target_file}.1" "${dl_dir}/${target_file}"
+chown -R root:root "${dl_dir}/${target_file}"
+chmod +x "${dl_dir}/${target_file}"
+# uncomment the symlinker below if needed
+ln -sf "${dl_dir}/${target_file}" "/usr/local/bin/powerline-go"
+}
+
 update_pulseaudioloopback() {
 printf "\n\n...Python-Pulseaudio-Loopback-Tool..."
 cd "$working_dir"
@@ -243,7 +260,7 @@ apt -o DPkg::Lock::Timeout=-1 update
 # use find (unless you already have fd)
 find -type d -name '.git' | xargs -n1 -P4 -I {} \
     bash -c 'pushd "${0%/*}" \
-    && ( git pull --depth 1; \
+    && ( git pull origin master --depth 1; \
     git tag -d $(git tag -l); \
     git reflog expire --expire=all --all;
     git gc --prune=all ) \
@@ -252,7 +269,7 @@ find -type d -name '.git' | xargs -n1 -P4 -I {} \
 # use fd if you have it
 #fd -HIFt d '.git' | xargs -n1 -P4 -I {} \
 #    bash -c 'pushd "$0" \
-#    && ( git pull --depth 1; \
+#    && ( git pull origin master --depth 1; \
 #    git tag -d $(git tag -l); \
 #    git reflog expire --expire=all --all; \
 #    git gc --prune=all ) \
@@ -270,6 +287,7 @@ update_lowdown \
 update_lf \
 update_outline_client \
 update_picom \
+update_powerline \
 update_pulseaudioloopback \
 update_rgpipe \
 update_ripgrep \
